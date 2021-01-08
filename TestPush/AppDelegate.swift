@@ -50,23 +50,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     
-        func registerForPushNotifications() {
-            UNUserNotificationCenter.current()
-              .requestAuthorization(
+    func registerForPushNotifications() {
+        UNUserNotificationCenter.current()
+            .requestAuthorization(
                 options: [.alert, .sound, .badge]) { [weak self] granted, _ in
                 print("Permission granted: \(granted)")
                 guard granted else { return }
                 self?.getNotificationSettings()
-              }
-        }
+            }
+        UNUserNotificationCenter.current().delegate = self
+    }
     
     func getNotificationSettings() {
-      UNUserNotificationCenter.current().getNotificationSettings { settings in
-        guard settings.authorizationStatus == .authorized else { return }
-        DispatchQueue.main.async {
-            UIApplication.shared.registerForRemoteNotifications()
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            switch settings.authorizationStatus {
+            case .authorized:
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+            case .denied:
+                print("denied")
+            case .notDetermined:
+                print("notDetermined")
+            case .provisional:
+                print("notDetermined")
+            case .ephemeral:
+                print("ephemeral")
+            @unknown default:
+                print("ko")
+            }
         }
-      }
     }
     
     func createInstallationOnParse(deviceTokenData:Data){
@@ -104,6 +117,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
     
+    // MARK: - UNUserNotificationCenterDelegate
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler(.alert)
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        completionHandler()
+    }
+    
+    
 
 }
+
+
 
