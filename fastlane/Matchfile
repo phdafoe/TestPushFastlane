@@ -1,0 +1,8 @@
+git_url "https://github.com/phdafoe/TestPushFastlane.git"
+
+type "development" # The default type, can be: appstore, adhoc, enterprise or development
+
+app_identifier [“com.everis.sl.TestPush.dev", "com.everis.sl.TestPush", "com.everis.sl.TestPush.staging"]
+username “phdafoe@gmail.com” # Your Apple Developer Portal username
+
+# For all available options run `fastlane match --help`
