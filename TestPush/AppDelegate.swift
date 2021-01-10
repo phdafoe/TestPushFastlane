@@ -8,7 +8,6 @@
 
 import UIKit
 import UserNotifications
-import Parse
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
@@ -17,8 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        self.settingParse()
-        self.registerForPushNotifications()
+        ParseManagerConnection.shared.settingParse()
         return true
     }
 
@@ -26,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let tokenParts = deviceToken.map { data in String(format: "%02.2hhx", data) }
         let token = tokenParts.joined()
         print("Devce Token: \(token)")
-        createInstallationOnParse(deviceTokenData: deviceToken)
+        ParseManagerConnection.shared.createInstallationOnParse(deviceTokenData: deviceToken)
     }
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
@@ -37,19 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Noti Silenciosa
     }
     
-    
-    // MARK: - Private methods
-    func settingParse() {
-        let configuration = ParseClientConfiguration {
-            $0.applicationId = "hZk4Zx14HSaLkfyj75Ea037TFruzkqqrSnU6Zwx1"
-            $0.clientKey = "fNuW9W6bm82vYXUZMYk0OmPtbEGOi6uov2zgd0qD"
-            $0.server = "https://parseapi.back4app.com"
-        }
-        Parse.initialize(with: configuration)
-        self.saveInstallationObject()
-    }
-    
-    
+    // MARK: - Private Methods
     func registerForPushNotifications() {
         UNUserNotificationCenter.current()
             .requestAuthorization(
@@ -74,45 +60,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 print("notDetermined")
             case .provisional:
                 print("notDetermined")
-            case .ephemeral:
-                print("ephemeral")
             @unknown default:
                 print("ko")
-            }
-        }
-    }
-    
-    func createInstallationOnParse(deviceTokenData:Data){
-        if let installation = PFInstallation.current(){
-            installation.setDeviceTokenFrom(deviceTokenData)
-            installation.saveInBackground {
-                (success: Bool, error: Error?) in
-                if (success) {
-                    print("You have successfully saved your push installation to Back4App!")
-                } else {
-                    if let myError = error{
-                        print("Error saving parse installation \(myError.localizedDescription)")
-                    }else{
-                        print("Uknown error")
-                    }
-                }
-            }
-        }
-    }
-    
-    func saveInstallationObject(){
-        if let installation = PFInstallation.current(){
-            installation.saveInBackground {
-                (success: Bool, error: Error?) in
-                if (success) {
-                    print("You have successfully connected your app to Back4App!")
-                } else {
-                    if let myError = error{
-                        print(myError.localizedDescription)
-                    }else{
-                        print("Uknown error")
-                    }
-                }
             }
         }
     }

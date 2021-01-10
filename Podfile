@@ -14,4 +14,3 @@ target 'TestPush' do
   pod 'Parse'
 
 end
-
